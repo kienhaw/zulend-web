@@ -22,6 +22,9 @@ Router.map(function() {
     this.route('show', {path: ':category_id'});
   });
   this.route('product-components');
+  this.route('users', function() {
+    this.route('show', {path: ':user_id'});
+  });
 });
 
 export default Router;

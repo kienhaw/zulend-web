@@ -7,7 +7,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
   afterModel() {
     if(this.get('session.isAuthenticated')) {
-      this.transitionTo('products.index');
+      this.transitionTo('users.index');
     }
   }
 });

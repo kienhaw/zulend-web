@@ -1,0 +1,341 @@
+<div class="container my-3">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <h3>{{model.user.name}}</h3>
+    <div>
+      {{!-- <button
+        class="btn btn-primary dropdown-toggle mr-2"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Actions
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+        {{#each model.user.status_events as |event|}}
+          <button class="dropdown-item" {{action "execStatusEvent" event}}>{{humanize event}}</button>
+        {{else}}
+          <a class="dropdown-item disabled" href="#">No further actions</a>
+        {{/each}}
+      </div> --}}
+      <button {{action "verifyPhone"}} class="btn btn-success mr-2 {{if model.user.phone_verified_at 'd-none'}}">Verify Phone</button>
+      {{#if processing}}
+        <button type="button" class="btn btn-success mr-2" disabled>Processing..</button>
+      {{else}}
+        <button {{action "save"}} class="btn btn-success mr-2">Save</button>
+      {{/if}}
+      {{link-to "Back" "users.index" class="btn btn-secondary"}}
+    </div>
+  </div>
+
+  <div class="container">
+    <dl class="row">
+      <dt class="col-sm-3 text-right">Created At :</dt>
+      <dd class="col-sm-8">{{moment-format model.user.created_at "DD MMM YYYY LT" allowEmpty=true}}&nbsp;</dd>
+      <dt class="col-sm-3 text-right">Name :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.name
+          class="form-control form-control-custom"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Email :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.email
+          class="form-control form-control-custom"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Role :</dt>
+      <dd class="col-sm-8 sm-input">
+        {{#power-select
+          searchEnabled=false
+          options=roles
+          selected=model.user.role
+          placeholder="Select role"
+          onChange=(action (mut model.user.role)) as |rol|}}
+          {{humanize rol}}
+        {{/power-select}}
+      </dd>
+      <dt class="col-sm-3 text-right">Company Name :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.company_name
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Phone No :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.phone_no
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Address :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.address
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">State :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.state
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">City :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.city
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Postcode :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.postcode
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Director Name :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.director_name
+          class="form-control"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Director IC :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.user.director_ic_no
+          class="form-control"
+        }}
+      </dd>
+      {{#if (eq model.user.role "customer")}}
+        <dt class="col-sm-3 text-right">SSM Certificate :</dt>
+        <dd class="col-sm-8">
+          {{#file-dropzone name="ssm" as |dropzone queue|}}
+            <div class="dropzone mx-auto">
+              <div style="min-height:200px; border-style: dashed;">
+                {{#if model.user.ssm_certificate}}
+                  <form class="dropzone text-center p-0">
+                    <div class="position-relative">
+                        <img class="img-fluid rounded mx-2" src={{get (get model.user.ssm_certificate 0) "url"}} alt="" width="95%">
+                        <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteDocument" (get (get model.user.ssm_certificate 0) "id") "ssm_certificate"}}>x</button>
+                    </div>
+                  </form>
+                {{else}}
+                  <form class="dropzone text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                      <div>
+                        {{fa-icon "cloud-upload-alt" size="3x"}}
+                        <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                        <h3>Drag and Drop file here</h3>
+                      </div>
+                    </div>
+                  </form>
+                {{/if}}
+              </div>
+              <div class="p-1 text-center">
+                {{#if dropzone.active}}
+                  {{#if dropzone.valid}}
+                    Drop to upload
+                  {{else}}
+                    Invalid
+                  {{/if}}
+                {{else if queue.files.length}}
+                  <div style="color:black;">
+                    Uploading {{queue.files.length}} files.
+                    {{ember-progress-bar progress=(div queue.progress 100) useDefaultStep=true}}
+                  </div>
+                {{else}}
+                  {{#if (and dropzone.supported (not model.user.ssm_certificate) )}}
+                    Drag & Drop File<br>
+                  {{/if}}
+                  {{#file-upload name="ssm"
+                    accept="image/*"
+                    onfileadd=(action "uploadSSM")}}
+                    <a id="upload-ssm" class="btn btn-sm btn-info text-white" tabindex="0">Upload SSM</a>
+                  {{/file-upload}}
+                {{/if}}
+              </div>
+            </div>
+          {{/file-dropzone}}
+        </dd>
+        <dt class="col-sm-3 text-right">Section 14 :</dt>
+        <dd class="col-sm-8">
+          {{#file-dropzone name="section14" as |dropzone queue|}}
+            <div class="dropzone mx-auto">
+              <div style="min-height:200px; border-style: dashed;">
+                {{#if model.user.section_14}}
+                  <form class="dropzone text-center p-0">
+                    <div class="position-relative">
+                        <img class="img-fluid rounded mx-2" src={{get (get model.user.section_14 0) "url"}} alt="" width="95%">
+                        <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteDocument" (get (get model.user.section_14 0) "id") "section_14"}}>x</button>
+                    </div>
+                  </form>
+                {{else}}
+                  <form class="dropzone text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                      <div>
+                        {{fa-icon "cloud-upload-alt" size="3x"}}
+                        <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                        <h3>Drag and Drop file here</h3>
+                      </div>
+                    </div>
+                  </form>
+                {{/if}}
+              </div>
+              <div class="p-1 text-center">
+                {{#if dropzone.active}}
+                  {{#if dropzone.valid}}
+                    Drop to upload
+                  {{else}}
+                    Invalid
+                  {{/if}}
+                {{else if queue.files.length}}
+                  <div style="color:black;">
+                    Uploading {{queue.files.length}} files.
+                    {{ember-progress-bar progress=(div queue.progress 100) useDefaultStep=true}}
+                  </div>
+                {{else}}
+                  {{#if (and dropzone.supported (not model.user.section_14) )}}
+                    Drag & Drop File<br>
+                  {{/if}}
+                  {{#file-upload name="section14"
+                    accept="image/*"
+                    onfileadd=(action "uploadSection14")}}
+                    <a id="upload-section14" class="btn btn-sm btn-info text-white" tabindex="0">Upload File</a>
+                  {{/file-upload}}
+                {{/if}}
+              </div>
+            </div>
+          {{/file-dropzone}}
+        </dd>
+        <dt class="col-sm-3 text-right">Director IC :</dt>
+        <dd class="col-sm-8">
+          {{#file-dropzone name="directorIc" as |dropzone queue|}}
+            <div class="dropzone mx-auto">
+              <div style="min-height:200px; border-style: dashed;">
+                {{#if model.user.director_ic}}
+                  <form class="dropzone text-center p-0">
+                    <div class="position-relative">
+                        <img class="img-fluid rounded mx-2" src={{get (get model.user.director_ic 0) "url"}} alt="" width="95%">
+                        <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteDocument" (get (get model.user.director_ic 0) "id") "director_ic"}}>x</button>
+                    </div>
+                  </form>
+                {{else}}
+                  <form class="dropzone text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                      <div>
+                        {{fa-icon "cloud-upload-alt" size="3x"}}
+                        <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                        <h3>Drag and Drop file here</h3>
+                      </div>
+                    </div>
+                  </form>
+                {{/if}}
+              </div>
+              <div class="p-1 text-center">
+                {{#if dropzone.active}}
+                  {{#if dropzone.valid}}
+                    Drop to upload
+                  {{else}}
+                    Invalid
+                  {{/if}}
+                {{else if queue.files.length}}
+                  <div style="color:black;">
+                    Uploading {{queue.files.length}} files.
+                    {{ember-progress-bar progress=(div queue.progress 100) useDefaultStep=true}}
+                  </div>
+                {{else}}
+                  {{#if (and dropzone.supported (not model.user.director_ic) )}}
+                    Drag & Drop File<br>
+                  {{/if}}
+                  {{#file-upload name="directorIc"
+                    accept="image/*"
+                    onfileadd=(action "uploadDirectorIc")}}
+                    <a id="upload-directorIc" class="btn btn-sm btn-info text-white" tabindex="0">Upload File</a>
+                  {{/file-upload}}
+                {{/if}}
+              </div>
+            </div>
+          {{/file-dropzone}}
+        </dd>
+        <dt class="col-sm-3 text-right">Bank Statements :</dt>
+        <dd class="col-sm-8">
+          {{#file-dropzone name="bankStatements" as |dropzone queue|}}
+            <div class="dropzone mx-auto">
+              <div style="min-height:200px; border-style: dashed;">
+                {{#if model.user.bank_statements}}
+                  <form class="dropzone text-center p-0">
+                    <div class="position-relative">
+                        <img class="img-fluid rounded mx-2" src={{get (get model.user.bank_statements 0) "url"}} alt="" width="95%">
+                        <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteDocument" (get (get model.user.bank_statements 0) "id") "bank_statements"}}>x</button>
+                    </div>
+                  </form>
+                {{else}}
+                  <form class="dropzone text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                      <div>
+                        {{fa-icon "cloud-upload-alt" size="3x"}}
+                        <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                        <h3>Drag and Drop file here</h3>
+                      </div>
+                    </div>
+                  </form>
+                {{/if}}
+              </div>
+              <div class="p-1 text-center">
+                {{#if dropzone.active}}
+                  {{#if dropzone.valid}}
+                    Drop to upload
+                  {{else}}
+                    Invalid
+                  {{/if}}
+                {{else if queue.files.length}}
+                  <div style="color:black;">
+                    Uploading {{queue.files.length}} files.
+                    {{ember-progress-bar progress=(div queue.progress 100) useDefaultStep=true}}
+                  </div>
+                {{else}}
+                  {{#if (and dropzone.supported (not model.user.bank_statements) )}}
+                    Drag & Drop File<br>
+                  {{/if}}
+                  {{#file-upload name="bankStatements"
+                    accept="image/*"
+                    multiple=true
+                    onfileadd=(action "uploadStatements")}}
+                    <a id="upload-bankStatements" class="btn btn-sm btn-info text-white" tabindex="0">Upload Statements</a>
+                  {{/file-upload}}
+                {{/if}}
+              </div>
+            </div>
+          {{/file-dropzone}}
+        </dd>
+      {{/if}}
+    </dl>
+
+    {{#if model.user.bank_statements}}
+    <div class="row">
+      <div class="col-sm-9 m-auto">
+        <div class="row">
+          Statements:
+          {{#each model.user.bank_statements as |statement|}}
+            <div class="d-inline-block position-relative">
+                <img class="img-fluid rounded mx-2" src={{statement.url}} alt="" width="150px">
+                <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteDocument" statement.id "bank_statements"}}>x</button>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+
+</div>
+
+{{outlet}}
