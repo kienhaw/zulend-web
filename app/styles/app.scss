@@ -1,0 +1,84 @@
+@import "node_modules/bootswatch/dist/sketchy/variables";
+@import "ember-cli-bootstrap-4/bootstrap";
+@import "node_modules/bootswatch/dist/sketchy/bootswatch";
+
+$ember-power-select-line-height: 40.5px !default;
+$ember-power-select-border-color: #bbb !default;
+$ember-power-select-trigger-icon-color: #bbb !default;
+$ember-power-select-focus-outline: 0 !default;
+$ember-power-select-opened-border-radius: 4px !default;
+$ember-power-select-search-input-border-radius: 3px !default;
+$ember-power-select-dropdown-margin: 3px !default;
+$ember-power-select-dropdown-box-shadow: rgba(black, 0.172549) 0px 6px 12px 0px !default;
+$ember-power-select-highlighted-color: $primary !default;
+$ember-power-select-highlighted-background: #f5f5f5 !default;
+$ember-power-select-selected-background: #f5f5f5 !default;
+$ember-power-select-focus-border-color: $primary !default;
+$ember-power-select-focus-box-shadow: none !default;
+$ember-power-select-dropdown-border: 1px solid $ember-power-select-border-color !default;
+$ember-power-select-dropdown-contiguous-border: $ember-power-select-dropdown-border !default;
+
+@import "ember-power-select";
+
+.badge-pending-superior-approval,
+.badge-pending-hr-approval,
+.badge-incomplete,
+.badge-in-process,
+.badge-pending,
+.badge-partial-day,
+.badge-late,
+.badge-appealed-to-superior,
+.badge-appealed-to-hr,
+.badge-appealed,
+.badge-submitted {
+  @extend .badge-warning;
+}
+
+.badge-approved-by-hr,
+.badge-in-the-office,
+.badge-allocated,
+.badge-approved,
+.badge-completed,
+.badge-full-day,
+.badge-on-time,
+.badge-active {
+  @extend .badge-success;
+}
+
+.badge-rejected-by-superior,
+.badge-rejected-by-hr,
+.badge-out-of-office,
+.badge-rejected,
+.badge-absent,
+.badge-expired,
+.badge-resigned {
+  @extend .badge-danger;
+}
+
+.badge-cancelled,
+.badge-withdrawn,
+.badge-off-day,
+.badge-inactive {
+  @extend .badge-secondary;
+}
+
+.badge-paid,
+.badge-in-progress,
+.badge-on-leave {
+  @extend .badge-info;
+}
+
+.badge-terminated {
+  @extend .badge-dark;
+}
+
+.pagination {
+  display: inline-block;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+}

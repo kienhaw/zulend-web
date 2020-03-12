@@ -1,0 +1,198 @@
+<div class="container mb-3">
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <div class="">
+      <h3>Item's Details</h3>
+    </div>
+    <div>
+      <button
+        class="btn btn-primary dropdown-toggle mr-2"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Actions
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+        {{#each model.product.status_events as |event|}}
+          <button class="dropdown-item" {{action "execStatusEvent" event}}>{{humanize event}}</button>
+        {{else}}
+          <a class="dropdown-item disabled" href="#">No further actions</a>
+        {{/each}}
+      </div>
+      {{#if processing}}
+        <button type="button" class="btn btn-success mr-2" disabled>Processing..</button>
+      {{else}}
+        <button {{action "save"}} class="btn btn-success mr-2">Save</button>
+      {{/if}}
+    </div>
+  </div>
+
+  <dl class="row">
+    <dt class="col-sm-3">
+      {{#if model.product.images}}
+      Image(s) :
+        <dt class="col-sm-12 mb-5 p-3 border">
+          {{#each model.product.images as |image|}}
+          <div class="d-inline-block position-relative">
+              <img class="img-fluid rounded mx-2" src={{image.url}} alt="" width="150px">
+              <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteVariant" image.id}}>x</button>
+          </div>
+
+          {{/each}}
+        </dt>
+        <dt class="col-sm-3 text-right"></dt>
+      {{/if}}
+    </dt>
+
+    <dt class="col-sm-9">
+      <dl class="row">
+        <dt class="col-sm-3 text-right"></dt>
+        <dd class="col-sm-6 sm-input m-auto">
+          {{#file-dropzone name="products" as |dropzone queue|}}
+            <div class="dropzone mx-auto">
+              <div style="min-height:200px; border-style: dashed;">
+                {{#if model.product.images}}
+                  <form class="dropzone text-center p-0">
+                    <div>
+                      <img class="img-fluid rounded" src={{get (get model.product.images 0) "url"}} alt=>
+                    </div>
+                  </form>
+                {{else}}
+                  <form class="dropzone text-center">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                      <div>
+                        {{fa-icon "cloud-upload-alt" size="3x"}}
+                        <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                        <h3>Drag and Drop image here</h3>
+                      </div>
+                    </div>
+                  </form>
+                {{/if}}
+              </div>
+              <div class="p-1 text-center">
+                {{#if dropzone.active}}
+                  {{#if dropzone.valid}}
+                    Drop to upload
+                  {{else}}
+                    Invalid
+                  {{/if}}
+                {{else if queue.files.length}}
+                  <div style="color:black;">
+                    Uploading {{queue.files.length}} files.
+                    {{ember-progress-bar progress=(div queue.progress 100) useDefaultStep=true}}
+                  </div>
+                {{else}}
+                  {{#if (and dropzone.supported (not model.user.scannedVisas) )}}
+                    Drag & Drop Image<br>
+                  {{/if}}
+                  {{#file-upload name="product"
+                    accept="image/*"
+                    multiple=true
+                    onfileadd=(action "uploadProducts")}}
+                    <a id="upload-products" class="btn btn-sm btn-info" tabindex="0">Upload Image</a>
+                  {{/file-upload}}
+                {{/if}}
+              </div>
+            </div>
+          {{/file-dropzone}}
+        </dd>
+        <dd class="col-sm-3"></dd>
+        <dt class="col-sm-2 text-right">Created At :</dt>
+        <dd class="col-sm-9">{{moment-format model.product.created_at "DD MMM YYYY LT" allowEmpty=true}}&nbsp;</dd>
+        <dt class="col-sm-2 text-right">Name :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=model.product.name
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">Description :</dt>
+        <dd class="col-sm-9">
+          {{textarea
+            value=model.product.description
+            rows="5"
+            class="form-control form-control-custom"
+          }}
+        </dd>
+
+        <dt class="col-sm-2 text-right">Category :</dt>
+        <dd class="col-sm-9 sm-input">
+          {{#power-select
+            searchEnabled=false
+            renderInPlace=true
+            options=model.categories
+            selected=model.product.category
+            onChange=(action (mut model.product.category))
+            placeholder="Select category"
+            as |category|}}
+            {{humanize category.name}}
+          {{/power-select}}
+        </dd>
+        <dt class="col-sm-2 text-right">Brand :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=model.product.brand
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">Keywords :</dt>
+        <dd class="col-sm-9">
+          {{textarea
+              value=model.product.keywords
+              class="form-control form-control-custom"
+            }}
+        </dd>
+        <dt class="col-sm-2 text-right">Variants Count :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=model.product.variants_count
+            class="form-control form-control-custom"
+            disabled=true
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">3 Months Price :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=(get model.product "3m_price")
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">6 Months Price :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=(get model.product "6m_price")
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">1 Year Price :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=(get model.product "1y_price")
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">2 Years Price :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=(get model.product "2y_price")
+            class="form-control form-control-custom"
+          }}
+        </dd>
+        <dt class="col-sm-2 text-right">Rent To Own Price :</dt>
+        <dd class="col-sm-9">
+          {{input
+            value=model.product.rto_price
+            class="form-control form-control-custom"
+          }}
+        </dd>
+      </dl>
+    </dt>
+  </dl>
+
+
+</div>
+
+{{outlet}}

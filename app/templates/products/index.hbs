@@ -1,0 +1,211 @@
+<div class="container mb-3">
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <h3>Products</h3>
+    <div>
+      <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#newProduct">+ Product</button>
+    </div>
+  </div>
+
+  {{!-- <form {{action "queryChanged" on="submit"}}>
+    <div class="form-inline mb-1">
+      <div class="form-group mb-1 mr-1">
+        {{input
+          type="text"
+          value=name_cont
+          class="form-control form-control-sm"
+          placeholder="Product Name"
+        }}
+      </div>
+      <div class="form-group mb-1 mr-1 xs-input">
+        {{#power-select
+          searchEnabled=false
+          renderInPlace=true
+          allowClear=true
+          options=categories
+          selected=category_eq
+          onchange=(action (mut category_eq))
+          placeholder="Select category"
+          as |category|}}
+          {{humanize category}}
+        {{/power-select}}
+      </div>
+      <div class="form-group mb-1 mr-auto">
+        <button type="submit" class="btn btn-sm btn-primary btn-block">{{fa-icon "search"}}</button>
+      </div>
+    </div>
+  </form> --}}
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+    {{model.meta.total_count}} result(s)
+    <div class="pagination">
+      <a href="#">&laquo;</a>
+      {{#each paginat as |number|}}
+        <a href="#">{{number}}</a>
+      {{/each}}
+      <a href="#">&raquo;</a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-striped table-sm">
+      <thead>
+        <tr class="text-nowrap">
+          <th>Created At</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.data as |product|}}
+          <tr>
+            <td>{{moment-format product.created_at "DD MMM YYYY LT" allowEmpty=true}}</td>
+            <td>
+              {{product.name}}
+            </td>
+            <td>{{humanize product.category.name}}</td>
+            <td align="center">{{product.description}}</td>
+            <td class="text-{{dasherize product.status}}"><span class="badge badge-{{dasherize product.status}}">{{humanize product.status}}</span></td>
+            <td>{{#link-to "products.show" product.id}}{{fa-icon "info-circle"}}{{/link-to}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{{outlet}}
+
+<div class="modal fade" id="newProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form {{action "queryChanged" on="submit"}}>
+          <div class="form-group form-group-custom sm-input">
+            <label>Name</label>
+            {{input
+              value=name
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Description</label>
+              {{textarea
+                value=description
+                rows="4"
+                class="form-control"
+              }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Category</label>
+            {{!-- {{ember-flatpickr
+              altInput=true
+              altFormat="Y-m-d"
+              date=(or (readonly dateFrom) null)
+              onChange=(action "setValue" "dateFrom")
+              class="form-control"
+              placeholder="Pick a date from"
+            }} --}}
+            {{!-- {{input
+              value=category
+              class="form-control"
+            }} --}}
+            {{#power-select
+              searchEnabled=false
+              renderInPlace=true
+              options=categories
+              selected=category
+              allowClear=true
+              placeholder="Select Points Type"
+              onChange=(action (mut category)) as |cat|}}
+              {{cat.name}}
+            {{/power-select}}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Status</label>
+            {{!-- {{ember-flatpickr
+              altInput=true
+              altFormat="Y-m-d"
+              date=(or (readonly dateTo) null)
+              onChange=(action "setValue" "dateTo")
+              class="form-control"
+              placeholder="Pick a date to"
+            }} --}}
+            {{input
+              value=status
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Keywords</label>
+            {{textarea
+              value=keywords
+              rows="4"
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>3 Months Rental Price</label>
+            {{input
+              value=price3m
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>6 Months Rental Price</label>
+            {{input
+              value=price6m
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>1 Year Rental Price</label>
+            {{input
+              value=price1y
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>2 Years Rental Price</label>
+            {{input
+              value=price2y
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Brand</label>
+            {{input
+              value=brand
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Rent To Own Price</label>
+            {{input
+              value=rtoPrice
+              class="form-control"
+            }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{#if processing}}
+          <button type="button" class="btn btn-success" disabled=disabled>Processing..</button>
+        {{else}}
+          <button type="button" class="btn btn-success" {{action "create"}}>Create</button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

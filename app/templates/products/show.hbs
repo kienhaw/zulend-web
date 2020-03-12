@@ -1,0 +1,25 @@
+<div class="container-fluid my-3">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <h3><span class="badge badge-{{dasherize model.product.status}} mr-2">{{humanize model.product.status}}</span>{{model.product.name}}</h3>
+    {{link-to "Back" "products.index" class="btn btn-secondary"}}
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <ul class="nav nav-tabs card-header-tabs" role="tablist">
+        <li class="nav-item">
+          {{#link-to "products.show.index" model.product.id class="nav-link"}}Details{{/link-to}}
+        </li>
+        <li class="nav-item">
+          {{#link-to "products.show.variant" model.product.id class="nav-link"}}Variants{{/link-to}}
+        </li>
+        <li class="nav-item">
+          {{#link-to "products.show.component" model.product.id class="nav-link"}}Components{{/link-to}}
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      {{outlet}}
+    </div>
+  </div>
+
+</div>

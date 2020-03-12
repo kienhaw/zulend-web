@@ -1,0 +1,149 @@
+<div class="container mb-3">
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <div class="">
+      <h3>Components</h3>
+    </div>
+    <div>
+      {{!-- <button
+        class="btn btn-primary dropdown-toggle mr-2"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Actions
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+        {{#each model.product.statusEvents as |event|}}
+          <button class="dropdown-item" {{action "execStatusEvent" event}}>{{humanize event}}</button>
+        {{else}}
+          <a class="dropdown-item disabled" href="#">No further actions</a>
+        {{/each}}
+      </div> --}}
+    </div>
+    <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#newComponent">+ Component</button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-striped table-sm">
+      <thead>
+        <tr class="text-nowrap">
+          <th>Created At</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Component Type</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.components as |component|}}
+          <tr>
+            <td>{{moment-format component.created_at "DD MMM YYYY LT" allowEmpty=true}}</td>
+            <td>{{component.name}}</td>
+            <td>{{component.description}}</td>
+            <td>{{component.component_type}}</td>
+            <td class="text-{{dasherize component.status}}"><span class="badge badge-{{dasherize component.status}}">{{humanize component.status}}</span></td>
+            <td>{{#link-to "products.show.component.show" component.id}}{{fa-icon "info-circle"}}{{/link-to}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{{outlet}}
+
+<div class="modal fade" id="newComponent" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Component</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form {{action "queryChanged" on="submit"}}>
+          <div class="form-group form-group-custom sm-input">
+            <label>Name</label>
+            {{input
+              value=name
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Description</label>
+              {{textarea
+                value=description
+                rows="4"
+                class="form-control"
+              }}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Component Type</label>
+            {{#power-select
+              searchEnabled=false
+              renderInPlace=true
+              options=componentTypes
+              selected=componentType
+              allowClear=true
+              placeholder="Select Component Type"
+              onChange=(action (mut componentType)) as |type|}}
+              {{humanize type}}
+            {{/power-select}}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Variant(s)</label>
+            {{#power-select-multiple
+              searchEnabled=false
+              renderInPlace=true
+              class="form-control form-control-custom"
+              options=model.variants
+              selected=selectedVariants
+              allowClear=true
+              placeholder="Select some variants..."
+              onChange=(action (mut selectedVariants))
+              as |variant|}}
+              {{variant.name}}
+            {{/power-select-multiple}}
+            {{!-- {{#power-select
+              searchEnabled=false
+              renderInPlace=true
+              options=model.variants
+              selected=selectedVariant
+              allowClear=true
+              placeholder="Select Points Type"
+              onChange=(action (mut selectedVariant)) as |variant|}}
+              {{variant.name}}
+            {{/power-select}} --}}
+          </div>
+          <div class="form-group form-group-custom">
+            <label>Current Variant</label>
+            {{#power-select
+              searchEnabled=false
+              renderInPlace=true
+              options=model.variants
+              selected=currentVariant
+              allowClear=true
+              placeholder="Select Current Variant"
+              onChange=(action (mut currentVariant)) as |variant|}}
+              {{variant.name}}
+            {{/power-select}}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{#if processing}}
+          <button type="button" class="btn btn-success" disabled=disabled>Processing..</button>
+        {{else}}
+          <button type="button" class="btn btn-success" {{action "create"}}>Create</button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

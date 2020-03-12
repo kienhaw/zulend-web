@@ -1,0 +1,60 @@
+<div class="body-login container-fluid">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4" style="margin-top: 10%; margin-bottom: 130px;">
+      <div class="card card-login card-body text-center">
+        <div class="text-center my-3">
+          {{!-- <img src="/logo.png" height="110" alt=""> --}}
+          {{!-- {{fa-icon "user"}} --}}
+        </div>
+        <h2 class="text-secondary mb-4"><b>Zulend Web Test</b></h2>
+        <form {{action "authenticate" on="submit"}}>
+          <div class="form-group">
+            <div class="input-group input-group-md mb-3">
+              <div class="input-group-append input-group-login">
+                <span class="input-group-text input-group-login">
+                  {{fa-icon "user" class="text-secondary"}}
+                </span>
+              </div>
+              {{input
+                value=identification
+                class="form-control form-control-login"
+                placeholder="Username"
+              }}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group input-group-md mb-3">
+              <div class="input-group-append input-group-login">
+                <span class="input-group-text input-group-login">
+                  {{fa-icon "lock" class="text-secondary"}}
+                </span>
+              </div>
+              {{input
+                type="password"
+                value=password
+                class="form-control form-control-login"
+                placeholder="********"
+              }}
+            </div>
+          </div>
+
+          {{#if processing}}
+            <button class="btn btn-lg btn-gradient px-5" disabled><small>LOADING...</small></button>
+          {{else}}
+            <button class="btn btn-lg btn-gradient px-5" type="submit"><small>LOGIN</small></button>
+          {{/if}}
+
+          {{#if errorMessage}}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              Email and password did not match. Please try again.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {{/if}}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{outlet}}
