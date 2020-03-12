@@ -158,7 +158,7 @@ export default Controller.extend({
       // }
       if(confirm('Are you sure you want to delete this image?')){
         return this.get('ajax').request(`/zulend-web/users/${this.model.user.id}/destroy-documents`, {
-          type: "POST",
+          type: "DELETE",
           data: {
             document_id: imageId,
             document_type: docType

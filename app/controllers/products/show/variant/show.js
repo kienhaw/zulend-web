@@ -124,7 +124,7 @@ export default Controller.extend({
     deleteVariant(imageId){
       if(confirm('Are you sure you want to delete this image?')){
         return this.get('ajax').request(`/zulend-web/variants/${this.model.variant.id}/destroy-images`, {
-          type: "POST",
+          type: "DELETE",
           data: {
             image_id: imageId
           }
