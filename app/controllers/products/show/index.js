@@ -23,6 +23,7 @@ export default Controller.extend({
             '2y_price': this.get('model.product.2y_price'),
             keywords: this.model.product.keywords,
             category_id: this.model.product.category.id,
+            usage: this.model.product.usage,
           }
         }).then(data => {
           this.get('notification').clearAll(); this.get('notification').success('Product successfully saved!');

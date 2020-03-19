@@ -16,6 +16,8 @@ export default Controller.extend({
     }
     return arr;
   }),
+
+  tempImageArr: [],
   //
   // uploadFiles: task(function * (file) {
   //   try {
@@ -39,18 +41,28 @@ export default Controller.extend({
   actions: {
     create() {
       if(confirm("Are you sure to create this variant?")){
+        var data = new FormData();
+        data.append("name", this.get('name'));
+        data.append("description", this.get('description'));
+        data.append("rto_price", this.get('rtoPrice'));
+        data.append("3m_price", this.get('price3m'));
+        data.append("6m_price", this.get('price6m'));
+        data.append("1y_price", this.get('price1y'));
+        data.append("2y_price", this.get('price2y'));
+        data.append("sku", this.get('sku'));
+        let arr = [];
+        for(var i = 0; i < this.get('tempImageArr').length; i++){
+          data.append(`images[${i}]`, this.get('tempImageArr')[i].blob);
+        }
+
         return this.get('ajax').request(`/zulend-web/products/${this.model.product.id}/variants`, {
           type: "POST",
-          data: {
-            name: this.get('name'),
-            description: this.get('description'),
-            rto_price: this.get('rtoPrice'),
-            '3m_price': this.get('price3m'),
-            '6m_price': this.get('price6m'),
-            '1y_price': this.get('price1y'),
-            '2y_price': this.get('price2y'),
-            sku: this.get('sku'),
-          }
+          enctype: 'multipart/form-data',
+          processData: false,  // Important!
+          contentType: false,
+          cache: false,
+          timeout: 600000,
+          data: data
         }).then(data => {
           $('#newVariant').modal('hide');
           this.get('notification').clearAll(); this.get('notification').success('Variant successfully created!');
@@ -94,8 +106,8 @@ export default Controller.extend({
       });
     },
 
-    uploadFiles(file) {
-      get(this, 'uploadFiles').perform(file);
+    uploadImage(image) {
+      this.set('tempImageArr', image.queue.files);
     },
   }
 

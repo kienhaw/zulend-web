@@ -127,6 +127,49 @@
               class="form-control"
             }}
           </div>
+          <div class="form-group form-group-custom sm-input">
+            <label>Image(s)</label>
+            {{#file-dropzone name="image" as |dropzone queue|}}
+              <div class="dropzone mx-auto">
+                {{#if tempImageArr}}
+                  {{#each tempImageArr as |image index|}}
+                    {{add index 1}}. {{image.name}} <br>
+                  {{/each}}
+                {{else}}
+                  <div style="min-height:200px; border-style: dashed;">
+                    <form class="dropzone text-center">
+                      <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                        <div>
+                          {{fa-icon "cloud-upload-alt" size="3x"}}
+                          <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                          <h3>Drag and Drop file here</h3>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                {{/if}}
+                <div class="p-1 text-center">
+                  {{#if dropzone.active}}
+                    {{#if dropzone.valid}}
+                      Drop to upload
+                    {{else}}
+                      Invalid
+                    {{/if}}
+                  {{else}}
+                    {{#if (and dropzone.supported (not image) )}}
+                      Drag & Drop File<br>
+                    {{/if}}
+                    {{#file-upload name="image"
+                      accept="image/*"
+                      multiple=true
+                      onfileadd=(action "uploadImage")}}
+                      <a id="upload-image" class="btn btn-sm btn-info text-white" tabindex="0">Upload Image</a>
+                    {{/file-upload}}
+                  {{/if}}
+                </div>
+              </div>
+            {{/file-dropzone}}
+          </div>
         </form>
       </div>
       <div class="modal-footer">

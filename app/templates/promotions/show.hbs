@@ -1,0 +1,127 @@
+<div class="container my-3">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <h3><span class="badge badge-{{dasherize model.promotion.status}} mr-2">{{humanize model.promotion.status}}</span>{{model.promotion.title}}</h3>
+    <div>
+      <button
+        class="btn btn-primary dropdown-toggle mr-2"
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Actions
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+        {{#each model.promotion.status_events as |event|}}
+          <button class="dropdown-item" {{action "execStatusEvent" event}}>{{humanize event}}</button>
+        {{else}}
+          <a class="dropdown-item disabled" href="#">No further actions</a>
+        {{/each}}
+      </div>
+      {{#if processing}}
+        <button type="button" class="btn btn-success mr-2" disabled>Processing..</button>
+      {{else}}
+        <button {{action "save"}} class="btn btn-success mr-2">Save</button>
+      {{/if}}
+      {{link-to "Back" "promotions.index" class="btn btn-secondary"}}
+    </div>
+  </div>
+
+  <div class="container">
+    <dl class="row">
+      <dt class="col-sm-3 text-right">Title :</dt>
+      <dd class="col-sm-8">
+        {{input
+          value=model.promotion.title
+          class="form-control form-control-custom"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Start At :</dt>
+      <dd class="col-sm-8">
+        {{ember-flatpickr
+          altInput=true
+          altFormat="Y-m-d"
+          date=(or (readonly model.promotion.start_at) null)
+          onChange=(action "setValue" "model.promotion.start_at")
+          class="form-control"
+          placeholder="Select Start At Date"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">End At :</dt>
+      <dd class="col-sm-8">
+        {{ember-flatpickr
+          altInput=true
+          altFormat="Y-m-d"
+          date=(or (readonly model.promotion.end_at) null)
+          onChange=(action "setValue" "model.promotion.end_at")
+          class="form-control"
+          placeholder="Select End At Date"
+        }}
+      </dd>
+      <dt class="col-sm-3 text-right">Products :</dt>
+      <dd class="col-sm-8">
+        {{#power-select-multiple
+          searchEnabled=false
+          renderInPlace=true
+          class="form-control form-control-custom"
+          options=model.products
+          selected=selectedProducts
+          allowClear=true
+          placeholder="Select some products..."
+          onChange=(action (mut selectedProducts))
+          as |product|}}
+          {{product.name}}
+        {{/power-select-multiple}}
+      </dd>
+      <dt class="col-sm-3 text-right">Image :</dt>
+      <dd class="col-sm-8">
+        {{#file-dropzone name="image" as |dropzone queue|}}
+          <div class="dropzone mx-auto">
+            <div style="min-height:200px; border-style: dashed;">
+              {{#if model.promotion.image}}
+                <form class="dropzone text-center p-0">
+                  <div class="position-relative">
+                      <img class="img-fluid rounded mx-2" src={{model.promotion.image}} alt="" width="95%">
+                      {{!-- <button type="button" name="button" class="position-absolute badge badge-danger" style="right:0; top:0" {{action "deleteImage" (get (get model.promotion.image 0) "id")}}>x</button> --}}
+                  </div>
+                </form>
+              {{else}}
+                <form class="dropzone text-center">
+                  <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                    <div>
+                      {{fa-icon "cloud-upload-alt" size="3x"}}
+                      <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                      <h3>Drag and Drop file here</h3>
+                    </div>
+                  </div>
+                </form>
+              {{/if}}
+            </div>
+            <div class="p-1 text-center">
+              {{#if dropzone.active}}
+                {{#if dropzone.valid}}
+                  Drop to upload
+                {{else}}
+                  Invalid
+                {{/if}}
+              {{else}}
+                {{#if (and dropzone.supported (not model.promotion.image) )}}
+                  Drag & Drop File<br>
+                {{/if}}
+                {{#file-upload name="image"
+                  accept="image/*"
+                  onfileadd=(action "uploadImage")}}
+                  <a id="upload-image" class="btn btn-sm btn-info text-white" tabindex="0">Upload Image</a>
+                {{/file-upload}}
+              {{/if}}
+            </div>
+          </div>
+        {{/file-dropzone}}
+      </dd>
+    </dl>
+  </div>
+
+</div>
+
+{{outlet}}

@@ -25,6 +25,9 @@ Router.map(function() {
   this.route('users', function() {
     this.route('show', {path: ':user_id'});
   });
+  this.route('promotions', function() {
+    this.route('show', {path: ':promotion_id'});
+  });
 });
 
 export default Router;

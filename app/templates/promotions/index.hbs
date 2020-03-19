@@ -1,0 +1,182 @@
+<div class="container mb-3">
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center my-3">
+    <h3>Promotions</h3>
+    <div>
+      <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#newPromotion">+ Promotion</button>
+    </div>
+  </div>
+
+  {{!-- <form {{action "queryChanged" on="submit"}}>
+    <div class="form-inline mb-1">
+      <div class="form-group mb-1 mr-1">
+        {{input
+          type="text"
+          value=name_cont
+          class="form-control form-control-sm"
+          placeholder="Product Name"
+        }}
+      </div>
+      <div class="form-group mb-1 mr-1 xs-input">
+        {{#power-select
+          searchEnabled=false
+          renderInPlace=true
+          allowClear=true
+          options=categories
+          selected=category_eq
+          onchange=(action (mut category_eq))
+          placeholder="Select category"
+          as |category|}}
+          {{humanize category}}
+        {{/power-select}}
+      </div>
+      <div class="form-group mb-1 mr-auto">
+        <button type="submit" class="btn btn-sm btn-primary btn-block">{{fa-icon "search"}}</button>
+      </div>
+    </div>
+  </form> --}}
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
+    {{!-- {{format-numeral model.content.meta.total-count}} result(s)
+    {{page-numbers content=model}} --}}
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-striped table-sm">
+      <thead>
+        <tr class="text-nowrap">
+          <th>Start At</th>
+          <th>End At</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each model.promotions as |promotion|}}
+          <tr>
+            <td>{{moment-format promotion.start_at "DD MMM YYYY LT" allowEmpty=true}}</td>
+            <td>{{moment-format promotion.end_at "DD MMM YYYY LT" allowEmpty=true}}</td>
+            <td>
+              {{promotion.title}}
+            </td>
+            <td class="text-{{dasherize promotion.status}}"><span class="badge badge-{{dasherize promotion.status}}">{{humanize promotion.status}}</span></td>
+            <td>{{#link-to "promotions.show" promotion.id}}{{fa-icon "info-circle" size="md"}}{{/link-to}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{{outlet}}
+
+<div class="modal fade" id="newPromotion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Promotion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form {{action "queryChanged" on="submit"}}>
+          <div class="form-group form-group-custom sm-input">
+            <label>Title</label>
+            {{input
+              value=title
+              class="form-control"
+            }}
+          </div>
+          <div class="form-group form-group-custom sm-input">
+            <label>Start At</label>
+            {{ember-flatpickr
+              altInput=true
+              altFormat="Y-m-d"
+              date=(or (readonly startAt) null)
+              onChange=(action "setValue" "startAt")
+              class="form-control"
+              placeholder="Select Start At Date"
+            }}
+          </div>
+          <div class="form-group form-group-custom sm-input">
+            <label>End At</label>
+            {{ember-flatpickr
+              altInput=true
+              altFormat="Y-m-d"
+              date=(or (readonly endAt) null)
+              onChange=(action "setValue" "endAt")
+              class="form-control"
+              placeholder="Select End At Date"
+            }}
+          </div>
+          <div class="form-group form-group-custom sm-input">
+            <label>Products</label>
+            {{#power-select-multiple
+              searchEnabled=false
+              renderInPlace=true
+              class="form-control form-control-custom"
+              options=model.products
+              selected=selectedProducts
+              allowClear=true
+              placeholder="Select some products..."
+              onChange=(action (mut selectedProducts))
+              as |product|}}
+              {{product.name}}
+            {{/power-select-multiple}}
+          </div>
+          <div class="form-group form-group-custom sm-input">
+            <label>Image</label>
+            {{#file-dropzone name="image" as |dropzone queue|}}
+              <div class="dropzone mx-auto">
+                {{#if image}}
+                  {{image.name}}
+                {{else}}
+                  <div style="min-height:200px; border-style: dashed;">
+                    <form class="dropzone text-center">
+                      <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:200px">
+                        <div>
+                          {{fa-icon "cloud-upload-alt" size="3x"}}
+                          <div class="icon"><span class="mdi mdi-cloud-upload"></span></div>
+                          <h3>Drag and Drop file here</h3>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                {{/if}}
+                <div class="p-1 text-center">
+                  {{#if dropzone.active}}
+                    {{#if dropzone.valid}}
+                      Drop to upload
+                    {{else}}
+                      Invalid
+                    {{/if}}
+                  {{else}}
+                    {{#if (and dropzone.supported (not image) )}}
+                      Drag & Drop File<br>
+                    {{/if}}
+                    {{#file-upload name="image"
+                      accept="image/*"
+                      onfileadd=(action "uploadImage")}}
+                      <a id="upload-image" class="btn btn-sm btn-info text-white" tabindex="0">Upload Image</a>
+                    {{/file-upload}}
+                  {{/if}}
+                </div>
+              </div>
+            {{/file-dropzone}}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{#if processing}}
+          <button type="button" class="btn btn-success" disabled=disabled>Processing..</button>
+        {{else}}
+          <button type="button" class="btn btn-success" {{action "create"}}>Create</button>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
